@@ -106,6 +106,7 @@ class FeedExtractor:
                 return results
         return None, None, None, None, None
 
+
     def getclusters(self, document, base_url):
         """
         Extracts all available text nodes with fixed text length
@@ -328,7 +329,7 @@ class FeedExtractor:
 
 
 
-    def get_feed(self, url, data=None, user_agent=None, cached_p=None):
+    def get_feed(self, url, data=None, user_agent=None, cached_p=None, document_preprocessor=None):
         """Return feed from url"""
         self.init_session()
         if cached_p is not None:
@@ -340,11 +341,16 @@ class FeedExtractor:
         self.log.save('get_rss', 'Decode data')
         try:
             document = fromstring(edata)
+            if document_preprocessor is not None:
+                document_preprocessor(document)
         except ValueError:
+            self.log.save("get_rss", "Error extracting document value")
             document = None
         self.log.save('get_rss', 'Parsed data')
+        print("Document ", document)
         feed = self.initfeed(document, url)
         clusters = self.getclusters(document, url)
+        print("Clusters ", clusters)
         self.log.save('get_rss', 'Clusters extracted')
         feed = self.process_clusters(url, clusters, feed)
         if cached_p is not None:

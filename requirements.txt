@@ -3,3 +3,5 @@ bs4
 pyparsing
 feedparser
 qddate
+requests
+chardet
